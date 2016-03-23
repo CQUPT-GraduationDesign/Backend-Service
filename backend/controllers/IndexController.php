@@ -7,9 +7,7 @@ use yii\web\Controller;
  * */
 class IndexController extends Controller {
     
-    public function actionIndex()
-    {
-        var_dump(Yii::$app->user->identity);die();
+    public function actionIndex(){
         return $this->render('index');
     }
 }

@@ -5,65 +5,69 @@ use yii\base\Model;
 use yii\web\IdentityInterface;
  
 class BackendUser  extends Model implements IdentityInterface {
+    public $id;
     public $username;
     public $password;
+    public $authKey;
+    public $accessToken;
     public $_currentUsername = '';
-    private $_userArray = [
-            'admin' => '123456',
+    private static $_userArray = [
+        '100' => [
+            'id' => '100',
+            'username' => 'admin',
+            'password' => 'admin',
+            'authKey'  => 'backend100key',
+            'accessToken' => '100-token',
+        ],
     ];
-    public function findByUsername($username = ""){
-        $uss = array_keys($this->_userArray);
-        if(in_array($username , $uss)){
-            $backU = new BackendUser();
-            $backU->username = $username;
-            $backU->_currentUsername = $username;
-            return $backU; 
-        }else{
-            return null;
+    public function findByUsername($username){
+        foreach (self::$_userArray as $user) {
+            if (strcasecmp($user['username'], $username) === 0) {
+                return new static($user);
+            }
         }
+        return null;
     }
     public function validatePassword($pass = ""){
-        if(empty($this->_currentUsername)){
-            return false;
-        }
-        if($pass !== $this->_userArray[$this->_currentUsername]){
-            return false;
-        }
-        return true;
+        return $this->password === $pass;
     } 
+    /**
+     * @inheritdoc
+     */
     public static function findIdentity($id){
-        return true;
+        return isset(self::$_userArray[$id]) ? new static(self::$_userArray[$id]) : null;
     }
 
+    /**
+     * @inheritdoc
+     */
     public static function findIdentityByAccessToken($token, $type = null){
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        foreach (self::$_userArray as $user) {
+            if ($user['accessToken'] === $token) {
+                return new static($user);
+            }
+        }
+        return null;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getId(){
-        return '1';
+        return $this->id;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getAuthKey(){
-        return "";
+        return $this->authKey;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function validateAuthKey($authKey){
-        return true;
-    }
-    /**
-     * Generates password hash from password and sets it to the model
-     *
-     * @param string $password
-     */
-    public function setPassword($password)
-    {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
-    }
-    /**
-     * Generates "remember me" authentication key
-     */
-    public function generateAuthKey()
-    {
-        $this->auth_key = Yii::$app->security->generateRandomString();
+        return $this->authKey === $authKey;
     }
 }
