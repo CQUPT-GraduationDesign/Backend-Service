@@ -14,7 +14,7 @@ class BackendUser  extends Model implements IdentityInterface {
     private static $_userArray = [
         '100' => [
             'id' => '100',
-            'username' => 'admin',
+            'username' => 'goadmin',
             'password' => 'admin',
             'authKey'  => 'backend100key',
             'accessToken' => '100-token',

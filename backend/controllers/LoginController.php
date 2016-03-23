@@ -26,6 +26,6 @@ class LoginController extends Controller {
     }
     public function actionLogout(){
         Yii::$app->user->logout();
-        return $this->goHome();
+        return $this->redirect(Yii::$app->urlManager->createUrl('login/index'));
     }
 }

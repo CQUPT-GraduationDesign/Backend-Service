@@ -72,13 +72,19 @@ use backend\components\pageHeader;
                         <li class="dropdown dropdown-user">
                             <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
                                 <img alt="" class="img-circle" src="http://cdn.king-liu.net/assets/layouts/layout/img/avatar3_small.jpg">
-                                <span class="username username-hide-on-mobile">admin</span>
+                                <span class="username username-hide-on-mobile"><?php
+                                                                                    if(!\Yii::$app->user->isGuest){
+                                                                                        echo \Yii::$app->user->identity->username;
+                                                                                    }else{
+                                                                                        echo '未登录';
+                                                                                    }
+                                                                                ?></span>
                                 <i class="fa fa-angle-down"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-default">
                                 <li class="divider"> </li>
                                 <li>
-                                    <a href="page_user_login_1.html">
+                                <a href="<?= \Yii::$app->urlManager->createUrl('login/logout') ?>">
                                         <i class="icon-key"></i>Log out</a>
                                 </li>
                             </ul>
