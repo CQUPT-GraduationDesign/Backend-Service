@@ -64,9 +64,9 @@ $this->title = "后台登录";
                         if($model->hasErrors()){
                             echo '
                                 <div class="alert alert-danger display-hide" style="display:block">
-                    <button class="close" data-close="alert"></button>
-                    <span></span>
-                </div>';
+                                    <button class="close" data-close="alert"></button>
+                                        <span>'.Html::errorSummary($model, ['class' => 'errors']).'</span>
+                                </div>';
                         }
                     }
                 ?>
@@ -80,7 +80,7 @@ $this->title = "后台登录";
                 <div class="form-actions">
                     <button type="submit" class="btn green uppercase">登录</button>
                     <label class="rememberme check">
-                        <input type="checkbox" name="rememberMe" value="true" />记住我</label>
+                        <input type="checkbox" name="rememberMe" value="1" />记住我</label>
                    <!-- <a href="javascript:;" id="forget-password" class="forget-password">Forgot Password?</a>
                 --->
                 <input type="hidden" name="_csrf" value="<?=Yii::$app->request->getCsrfToken()?>" />
