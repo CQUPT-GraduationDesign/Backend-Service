@@ -14,16 +14,24 @@ class backendSidebar extends Widget{
     private $startBarString = ''; 
     private $itemBarString = '';
     public function init(){
-         $this->startBarString = $this->buildStartBar(); 
-         $this->itemBarString = $this->buildItemBar(); 
+         if(empty($this->startBarArray) || !is_array($this->startBarArray)){
+             $this->startBarString = $this->buildStartBar();
+         }else{
+             $this->startBarString = $this->buildStartBar($this->startBarArray);
+         }
+         if(empty($this->sideBarArray) || !is_array($this->sideBarArray)){
+             $this->itemBarString = $this->buildItemBar(); 
+         }else{
+             $this->itemBarString = $this->buildItemBar($this->sideBarArray); 
+         } 
     }
     private function buildStartBar($data = [
                                     'title' => [
-                                        'name' => '首页控制台',
+                                        'name' => '默认sidebar',
                                         'isAc' => true,
                                     ],
                                     'item' => [
-                                        ['name' => '控制台' , 'url' => 'asas','isAc'=>true],
+                                        ['name' => '控制台' , 'icon'=>'fa-bar-chart' , 'url' =>'','isAc'=>true],
                                     ],
                                 ]){
         $headAcArr = [];
@@ -41,7 +49,7 @@ class backendSidebar extends Widget{
             }
             $item .= '<li class="nav-item start '.$acArr['isOpen'].'">
                                     <a href="'.$v['url'].'" class="nav-link ">
-                                        <i class="icon-bar-chart"></i>
+                                        <i class="fa '.$v['icon'].'"></i>
                                         <span class="title">'.$v['name'].'</span>
                                         '.$acArr['isSelected'].'
                                     </a>
@@ -50,7 +58,7 @@ class backendSidebar extends Widget{
         }
         return  '<li class="nav-item start '.$headAcArr['isOpen'].'">
                             <a href="javascript:;" class="nav-link nav-toggle">
-                                <i class="icon-home"></i>
+                                <i class="fa fa-home"></i>
                                 <span class="title">'.$data['title']['name'].'</span>
                                 '.$headAcArr['isSelected'].'
                                 <span class="arrow '.$headAcArr['isArrowOpen'].'"></span>
@@ -64,10 +72,10 @@ class backendSidebar extends Widget{
                                     [
                                         'headName' => '城市',
                                         'name' => '城市信息',
-                                        'icon' => 'cc',
+                                        'icon' => 'fa-tv',
                                         'isAc' => false,
                                         'items' => [
-                                            ['name' => '所有城市' ,'url' => '12211' , 'isAc'=>false],
+                                            ['name' => '所有城市','icon'=>'fa-tv' ,'url' => '12211' , 'isAc'=>false],
                                         ],
                                     ],
                             ]){
@@ -82,7 +90,7 @@ class backendSidebar extends Widget{
                        </li>
                        <li class="nav-item  '.$headAc.'">
                             <a href="javascript:;" class="nav-link nav-toggle">
-                                <i class="'.$v['icon'].'"></i>
+                                <i class="fa '.$v['icon'].'"></i>
                                 <span class="title">'.$v['name'].'</span>
                                 <span class="arrow"></span>
                             </a>
@@ -94,6 +102,7 @@ class backendSidebar extends Widget{
                 }
                 $items.='<li class="nav-item  '.$itemAc.'">
                             <a href="'.$value['url'].'" class="nav-link ">
+                                <i class="fa '.$value['icon'].'"></i>
                                 <span class="title">'.$value['name'].'</span>
                             </a>
                          </li>';

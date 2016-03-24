@@ -108,7 +108,8 @@ use backend\components\backendSidebar;
         <!-- BEGIN CONTAINER -->
         <div class="page-container">
             <?= backendSidebar::widget([
-            
+            		'startBarArray' => isset($this->params['startBarConfig']) ? $this->params['startBarConfig'] : [],
+            		'sideBarArray' => isset($this->params['sideBarConfig']) ? $this->params['sideBarConfig'] : [],
             ]) ?>
             <!-- BEGIN CONTENT -->
             <div class="page-content-wrapper">

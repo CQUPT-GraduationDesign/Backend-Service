@@ -16,6 +16,9 @@ class LoginController extends Controller {
         if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
         }
+        if(empty($request->post())){
+            return $this->renderPartial('index');
+        }
         $model = new BackendLoginForm();
         $model->attributes = $request->post();
         if($model->login()){
