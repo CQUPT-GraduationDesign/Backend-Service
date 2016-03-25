@@ -28,10 +28,10 @@ class Frontuser extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uid', 'username', 'password'], 'required'],
-            [['uid'], 'integer'],
-            [['ext'], 'string'],
-            [['username', 'password'], 'string', 'max' => 255]
+            [['username', 'password'], 'required' , 'message'=>'用户名和密码是必填项'],
+            [['username'], 'unique', 'message'=>'用户名已经存在'],
+            [['ext'], 'string','message'=>'必须是字符串'],
+            [['username', 'password'], 'string', 'max' => 255 ,'message'=>'超过最大限制']
         ];
     }
 
