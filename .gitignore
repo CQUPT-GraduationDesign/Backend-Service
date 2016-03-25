@@ -1,5 +1,7 @@
 # yii console command
 /yii
+# redis admin client
+/redisadmin
 
 # phpstorm project files
 .idea

@@ -13,7 +13,7 @@ return [
     'controllerNamespace' => 'api\controllers',
     'components' => [
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'api\models\User',
             'enableAutoLogin' => true,
         ],
         'log' => [
@@ -26,16 +26,13 @@ return [
             ],
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'errorAction' => 'index/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
+            'showScriptName' => true,
+            'rules' => ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
         ],
-        */
     ],
     'params' => $params,
 ];
