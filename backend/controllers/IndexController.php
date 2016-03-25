@@ -29,15 +29,10 @@ class IndexController extends Controller {
     public function actionIndex(){
         return $this->render('index');
     }
-    /**
-     * @inheritdoc
-     */
-    public function actions()
-    {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-        ];
+    public function actionError(){
+        $exception = Yii::$app->errorHandler->exception;
+            if($exception !== null) {
+                return $this->renderPartial('error', ['exception' => $exception]);
+            }
     }
 }
