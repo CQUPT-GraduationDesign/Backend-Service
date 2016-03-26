@@ -13,7 +13,7 @@ return [
     'controllerNamespace' => 'api\controllers',
     'components' => [
         'user' => [
-            'identityClass' => 'api\models\User',
+            'identityClass' => 'api\models\Frontuser',
             //'enableAutoLogin' => true,
             'enableSession' => false,
             'loginUrl' => null,
