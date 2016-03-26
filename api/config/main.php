@@ -14,7 +14,9 @@ return [
     'components' => [
         'user' => [
             'identityClass' => 'api\models\User',
-            'enableAutoLogin' => true,
+            //'enableAutoLogin' => true,
+            'enableSession' => false,
+            'loginUrl' => null,
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
