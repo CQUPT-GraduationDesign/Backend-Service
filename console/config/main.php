@@ -20,6 +20,13 @@ return [
                 ],
             ],
         ],
+        'db' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host=127.0.0.1;dbname=go',
+            'username' => 'root',
+            'password' => '1234567890',
+            'charset' => 'utf8',
+        ],
     ],
     'params' => $params,
 ];

@@ -18,7 +18,12 @@ class IndexController extends Controller {
                 'rules' =>[   
                     [
                        'allow' => true,
+                       'actions' => ['index'],
                        'roles' => ['@'],
+                    ], 
+                    [
+                       'allow' => true,
+                       'actions' => ['error'],
                     ], 
                 ],
     
@@ -31,8 +36,10 @@ class IndexController extends Controller {
     }
     public function actionError(){
         $exception = Yii::$app->errorHandler->exception;
-            if($exception !== null) {
-                return $this->renderPartial('error', ['exception' => $exception]);
-            }
+        if($exception !== null) {
+            return $this->renderPartial('error', ['exception' => $exception]);
+        }else{
+            $this->redirect(['index/index']);
+        }
     }
 }
