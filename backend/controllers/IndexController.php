@@ -6,7 +6,7 @@ use yii\filters\AccessControl;
 /**
  * index controller
  * */
-class IndexController extends Controller {
+class IndexController extends BackendabstractController {
     /**
      * @inheritdoc
      */

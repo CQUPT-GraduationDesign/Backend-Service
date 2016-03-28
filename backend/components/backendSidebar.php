@@ -39,6 +39,10 @@ class backendSidebar extends Widget{
             $headAcArr['isOpen'] = "active open";
             $headAcArr['isSelected'] = '<span class="selected"></span>';
             $headAcArr['isArrowOpen'] = "open";
+        }else{
+            $headAcArr['isOpen'] = "";
+            $headAcArr['isSelected'] = '';
+            $headAcArr['isArrowOpen'] = "";
         } 
         $item = "";
         foreach($data['item'] as $k=>$v){
@@ -46,6 +50,9 @@ class backendSidebar extends Widget{
             if($v['isAc']){
                 $acArr['isOpen'] = "active open";
                 $acArr['isSelected'] = '<span class="selected"></span>';
+            }else{
+                $acArr['isOpen'] = "";
+                $acArr['isSelected'] = '';
             }
             $item .= '<li class="nav-item start '.$acArr['isOpen'].'">
                                     <a href="'.$v['url'].'" class="nav-link ">
@@ -71,44 +78,51 @@ class backendSidebar extends Widget{
     private function buildItemBar($data = [
                                     [
                                         'headName' => '城市',
-                                        'name' => '城市信息',
-                                        'icon' => 'fa-tv',
-                                        'isAc' => false,
-                                        'items' => [
-                                            ['name' => '所有城市','icon'=>'fa-tv' ,'url' => '12211' , 'isAc'=>false],
+                                        'items'=>[
+                                            [
+                                                'name' => '城市信息',
+                                                'icon' => 'fa-tv',
+                                                'isAc' => false,
+                                                'items' => [
+                                                    ['name' => '所有城市','icon'=>'fa-tv' ,'url' => '12211' , 'isAc'=>false],
+                                                ],
+                                            ],    
                                         ],
                                     ],
                             ]){
         $items = "";
-        foreach($data  as $k => $v){
+        foreach($data  as $k => $val){
             $headAc = "";
-            if($v['isAc']){
-                $headAc = "active open";
-            }
             $items .= '<li class="heading">
-                            <h3 class="uppercase">'.$v['headName'].'</h3>
-                       </li>
-                       <li class="nav-item  '.$headAc.'">
-                            <a href="javascript:;" class="nav-link nav-toggle">
+                            <h3 class="uppercase">'.$val['headName'].'</h3>
+                       </li>';
+            foreach($val['items'] as $v){
+                if($v['isAc']){
+                    $headAc = "active open";
+                }
+                $items.='<li class="nav-item  '.$headAc.'">
+                           <a href="javascript:;" class="nav-link nav-toggle">
                                 <i class="fa '.$v['icon'].'"></i>
                                 <span class="title">'.$v['name'].'</span>
                                 <span class="arrow"></span>
                             </a>
-                            <ul class="sub-menu">';
-            foreach($v['items'] as $key => $value){
-                $itemAc = "";
-                if($value['isAc']){
-                    $itemAc = "active open";
+                         <ul class="sub-menu">';
+                foreach($v['items'] as $key => $value){
+                    $itemAc = "";
+                    if($value['isAc']){
+                        $itemAc = "active open";
+                    }
+                    $items.='<li class="nav-item  '.$itemAc.'">
+                                <a href="'.$value['url'].'" class="nav-link ">
+                                    <i class="fa '.$value['icon'].'"></i>
+                                    <span class="title">'.$value['name'].'</span>
+                                </a>
+                            </li>';
                 }
-                $items.='<li class="nav-item  '.$itemAc.'">
-                            <a href="'.$value['url'].'" class="nav-link ">
-                                <i class="fa '.$value['icon'].'"></i>
-                                <span class="title">'.$value['name'].'</span>
-                            </a>
-                         </li>';
+
+            $items.= '</ul>
+                        </li>';
             }
-            $items.='    </ul>
-                    </li>';
         }
         return $items;
     }
