@@ -8,8 +8,6 @@ $this->params['bigHeader'] = '首页';
 $this->params['smallHeader'] = '首页';
 $this->params['startBarConfig'] = $startBarConfig;
 $this->params['sideBarConfig'] = $sideBarConfig;
-//$this->params['sideBarConfig']['dataConfig']['items']['staticData']['isAc']  = true;
-//$this->params['sideBarConfig']['dataConfig']['items']['staticData']['items'][1]['isAc']  = true;
 $this->params['startBarConfig']['title']['isAc']  = true;
 $this->params['startBarConfig']['item'][0]['isAc']  = true;
 ?>

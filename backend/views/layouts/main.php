@@ -3,6 +3,7 @@ use yii\widgets\Breadcrumbs;
 use backend\components\pageHeader;
 use backend\components\backendSidebar;
 ?>
+<?php $this->beginPage() ?>
 <!DOCTYPE html>
 
 <!--[if IE 8]> <html lang="en" class="ie8 no-js"> <![endif]-->
@@ -27,6 +28,7 @@ use backend\components\backendSidebar;
         <link href="http://cdn.king-liu.net/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
         <!-- END GLOBAL MANDATORY STYLES -->
         <!-- BEGIN THEME GLOBAL STYLES -->
+        <?php $this->head() ?>
         <link href="http://cdn.king-liu.net/assets/global/css/components.min.css" rel="stylesheet" id="style_components" type="text/css" />
         <link href="http://cdn.king-liu.net/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />
         <!-- END THEME GLOBAL STYLES -->
@@ -35,9 +37,10 @@ use backend\components\backendSidebar;
         <link href="http://cdn.king-liu.net/assets/layouts/layout/css/themes/darkblue.min.css" rel="stylesheet" type="text/css" id="style_color" />
         <link href="http://cdn.king-liu.net/assets/layouts/layout/css/custom.min.css" rel="stylesheet" type="text/css" />
         <!-- END THEME LAYOUT STYLES -->
-        <link rel="shortcut icon" href="favicon.ico" /> </head>
+        <link rel="shortcut icon" href="favicon.ico" />
+     </head>
     <!-- END HEAD -->
-
+<?php $this->beginBody() ?>
 <body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white">
         <!-- BEGIN HEADER -->
         <div class="page-header navbar navbar-fixed-top">
@@ -138,9 +141,7 @@ use backend\components\backendSidebar;
                     --->
                     <!-- END PAGE TITLE-->
                     <!-- END PAGE HEADER-->
-                    <div class="note note-info">
 		            	<?php echo $content ;?>
-                    </div>
                 </div>
                 <!-- END CONTENT BODY -->
             </div>
@@ -172,6 +173,7 @@ use backend\components\backendSidebar;
         <!-- END CORE PLUGINS -->
         <!-- BEGIN THEME GLOBAL SCRIPTS -->
         <script src="http://cdn.king-liu.net/assets/global/scripts/app.min.js" type="text/javascript"></script>
+<?php $this->endBody() ?>
         <!-- END THEME GLOBAL SCRIPTS -->
         <!-- BEGIN THEME LAYOUT SCRIPTS -->
         <script src="http://cdn.king-liu.net/assets/layouts/layout/scripts/layout.min.js" type="text/javascript"></script>
@@ -180,3 +182,4 @@ use backend\components\backendSidebar;
         <!-- END THEME LAYOUT SCRIPTS -->
 </body>
 </html>
+<?php $this->endPage() ?>
