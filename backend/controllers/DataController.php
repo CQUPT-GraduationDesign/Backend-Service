@@ -82,11 +82,18 @@ class DataController extends BackendabstractController {
         $this->render('citys' , ['rows' => $rows]);
     }
     public function actionUpdatecitys(){
+        $request = Yii::$app->request;
+        $id = $request->get('id');
+        $city = Citys::findOne(['id' => $id]); 
+        if(empty($city)){
+           $this->redirect('index/index'); 
+        }
         $planeRows = $this->_getPlaneData();
         $trainRows = $this->_getTrainData();
         $this->render('updatecitys' , [
             'planeRows' => $planeRows,
             'trainRows' => $trainRows,
+            'city'      => $city,
         ]);
     }
 }

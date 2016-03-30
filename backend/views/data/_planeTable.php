@@ -1,4 +1,4 @@
-                                    <table class="table table-striped table-bordered table-hover order-column" id="dataTable_ex">
+                                    <table class="table table-striped table-bordered table-hover order-column data-table-selecter" id="dataTable_ex">
                                         <thead>
                                             <tr>
                                                 <th> id</th>

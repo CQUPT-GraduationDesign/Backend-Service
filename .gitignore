@@ -5,6 +5,7 @@
 /backend/assets
 #sp file
 table-datatables-managed.js
+update-citys-stations.js
 # phpstorm project files
 .idea
 
