@@ -4,6 +4,7 @@ use Yii;
 use yii\console\Controller;
 use console\models\Trainstations;
 use console\models\Planestations;
+use console\models\Citys;
 
 class DataController extends Controller
 {
@@ -54,4 +55,19 @@ class DataController extends Controller
         }
         echo "\n\n\n".$nums;
     } 
+    public function actionInsertcitys(){
+        $nums = 0;
+        $data = require(Yii::$app->params['onlineCitysDataForRequire']); 
+        foreach( $data as $d){
+            $city = new Citys(); 
+            $city->name = $d;
+            if($city->save()){
+                $nums++;
+                echo $city->id.'->'.$city->name."succeed ! \n";
+            }else{
+                var_dump($city->getErrors());
+            }
+        }
+        echo "\n\n\n".$nums;
+    }
 }

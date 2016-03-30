@@ -1,4 +1,3 @@
-
 <?php
 use yii\widgets\LinkPager;
 $this->title = '机场数据';
@@ -16,34 +15,5 @@ $this->registerJsFile("http://cdn.king-liu.net/assets/global/plugins/datatables/
 $this->registerJsFile("http://cdn.king-liu.net/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js");
 $this->registerJsFile("http://go.king-liu.net/table-datatables-managed.js");
 ?>
-                                    <table class="table table-striped table-bordered table-hover order-column" id="dataTable">
-                                        <thead>
-                                            <tr>
-                                                <th> id</th>
-                                                <th> 省 </th>
-                                                <th> 城市 </th>
-                                                <th> 代码 </th>
-                                                <th> 名称 </th>
-                                                <th> 拼音 </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        <?php
-                                        foreach($models as $m){
-                                            echo'
-                                            <tr class="odd gradeX">
-                                                <td> '.$m->id.' </td>
-                                                <td>
-                                                   '.$m->province.' 
-                                                </td>
-                                                <td>'.$m->city.'</td>
-                                                <td class="center">'.$m->code.'</td>
-                                                <td>
-                                                   '.$m->name.' 
-                                                </td>
-                                                <td>'.$m->alphabetic.'</td>
-                                                </tr>';
-                                        }
-                                        ?>
-                                        </tbody>
-                                    </table>
+<?php // render reused view ?>
+<?= $this->render('_planeTable.php' ,['rows'=>$rows] )  ?>

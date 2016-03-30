@@ -2,6 +2,7 @@
 /yii
 # redis admin client
 /redisadmin
+/backend/assets
 #sp file
 table-datatables-managed.js
 # phpstorm project files

@@ -16,32 +16,5 @@ $this->registerJsFile("http://cdn.king-liu.net/assets/global/plugins/datatables/
 $this->registerJsFile("http://cdn.king-liu.net/assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js");
 $this->registerJsFile("http://go.king-liu.net/table-datatables-managed.js");
 ?>
-                                    <table class="table table-striped table-bordered table-hover order-column" id="dataTable">
-                                        <thead>
-                                            <tr>
-                                                <th> id</th>
-                                                <th>拼音缩写 </th>
-                                                <th> 名称</th>
-                                                <th> 拼音 </th>
-                                                <th> 三字码</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        <?php
-                                        foreach($models as $m){
-                                            echo'
-                                            <tr class="odd gradeX">
-                                                <td> '.$m->id.' </td>
-                                                <td>
-                                                   '.$m->shortalphabetic.' 
-                                                </td>
-                                                <td>'.$m->name.'</td>
-                                                <td class="center">'.$m->alphabetic.'</td>
-                                                <td>
-                                                   '.$m->code.' 
-                                                </td>
-                                                </tr>';
-                                        }
-                                        ?>
-                                        </tbody>
-                                    </table>
+<?php // render reused view ?>
+<?= $this->render('_trainTable.php' , ['rows'=>$rows] ) ?>
