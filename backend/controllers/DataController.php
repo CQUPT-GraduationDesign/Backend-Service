@@ -14,6 +14,7 @@ use yii\db\Query;
  * data controller for show and handle data request
  * */
 class DataController extends BackendabstractController {
+    public $enableCsrfValidation = false;
     /**
      * @inheritdoc
      */
@@ -24,7 +25,7 @@ class DataController extends BackendabstractController {
                 'rules' =>[   
                     [
                        'allow' => true,
-                       'actions' => ['updatecitys','train' , 'plane' , 'citys'],
+                       'actions' => ['addplaneforcity', 'addtrainforcity'  ,'updatecitys','train' , 'plane' , 'citys'],
                        'roles' => ['@'],
                     ], 
                 ],
@@ -88,6 +89,8 @@ class DataController extends BackendabstractController {
         if(empty($city)){
            $this->redirect('index/index'); 
         }
+        var_dump($city->planestationforcities);
+        die();
         $planeRows = $this->_getPlaneData();
         $trainRows = $this->_getTrainData();
         $this->render('updatecitys' , [
@@ -95,5 +98,67 @@ class DataController extends BackendabstractController {
             'trainRows' => $trainRows,
             'city'      => $city,
         ]);
+    }
+    public function actionAddtrainforcity(){
+        $request = Yii::$app->request;
+        $trains = [];
+        $returnData = [];
+        $post = $request->post();
+        $city = Citys::findOne(['id' => $post['cityid']]);
+        if(empty($city)){
+            throw new \yii\web\NotAcceptableHttpException();
+        }
+        $trainIds = $post['data'];
+        foreach($trainIds as $t){
+            $tr = Trainstations::findOne(['id' => $t]); 
+            if(empty($tr)){
+                throw new \yii\web\NotAcceptableHttpException();
+            }
+            $trains[] = $tr; 
+        }
+        foreach($trains as $t){
+            $re = [];
+            $train_city = new Trainstationforcity;          
+            $train_city->cityid = $city->id;
+            $train_city->trainstationid = $t->id;
+            if(!$train_city->save()){
+                throw new \yii\web\ServerErrorHttpException(); 
+            }
+            $re['name'] = $t->name; 
+            $re['code'] = $t->code;
+            $returnData[] = $re;
+        }
+        return json_encode($returnData);
+    }
+    public function actionAddplaneforcity(){
+        $request = Yii::$app->request;
+        $planes = [];
+        $returnData = [];
+        $post = $request->post();
+        $city = Citys::findOne(['id' => $post['cityid']]);
+        if(empty($city)){
+            throw new \yii\web\NotAcceptableHttpException();
+        }
+        $planeIds = $post['data'];
+        foreach($planeIds as $p){
+            $pl = Planestations::findOne(['id' => $p]); 
+            if(empty($pl)){
+                throw new \yii\web\NotAcceptableHttpException();
+            }
+            $planes[] = $pl; 
+        }
+        foreach($planes as $p){
+            $re = [];
+            $plane_city = new Planestationforcity;          
+            $plane_city->cityid = $city->id;
+            $plane_city->planestationid = $p->id;
+            if(!$plane_city->save()){
+                throw new \yii\web\ServerErrorHttpException(); 
+            }
+            $re['name'] = $p->name; 
+            $re['code'] = $p->code;
+            $returnData[] = $re;
+        }
+        return json_encode($returnData);
     }
 }

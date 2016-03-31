@@ -17,6 +17,7 @@ $this->registerJsFile("http://cdn.king-liu.net/assets/global/plugins/datatables/
 $this->registerJsFile("http://go.king-liu.net/table-datatables-managed.js");
 $this->registerJsFile("http://go.king-liu.net/update-citys-stations.js");
 ?>
+    <input id="update-city-id" type="hidden" value="<?= $city->id ?>" >
      <div class="row">
                         <div class="col-md-12">
                             <div class="portlet light bordered">
@@ -24,7 +25,8 @@ $this->registerJsFile("http://go.king-liu.net/update-citys-stations.js");
                                     <div class="caption">
                                         <i class="icon-bubble font-green-sharp"></i>
                                         <span class="caption-subject font-green-sharp bold uppercase">当前选择的城市是：<?= $city->name ?> </span>
-                                        <button id="update-button" type="button" class="btn btn-circle blue-madison">更新数据</button>
+                                        <button data-toggle="modal" href="#modal-train" id="update-train-button" type="button" class="btn btn-circle blue-madison">更新车站</button>
+                                        <button data-toggle="modal" href="#modal-plane" id="update-plane-button" type="button" class="btn btn-circle green-sharp">更新机场</button>
                                     </div>
                                     
                                 </div>
@@ -49,11 +51,53 @@ $this->registerJsFile("http://go.king-liu.net/update-citys-stations.js");
                                         <?= $this->render('_planeTable.php' , [ 'rows' => $planeRows ]) ?> 
                                         </div>
                                         <div class="tab-pane fade" id="tab_selected">
+                                                 <table class="table table-hover">
+                                                    <tbody id="selected-data-table">
+                                                    </tbody>
+                                                </table>
                                         </div>
-                                        
-                                        
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="modal fade bs-modal-lg" id="modal-train" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                                    <h4 class="modal-title">要给 <?= $city->name  ?> 添加这些车站吗?</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                 <table class="table table-hover">
+                                                    <tbody id="update-modal-table-train">
+                                                    </tbody>
+                                                </table>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" id = "update-modal-train-quit" class="btn dark btn-outline" data-dismiss="modal">退出</button>
+                                                    <button type="button" id = "update-modal-train-submit" class="btn green" data-dismiss = "modal">提交</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                     </div>
+                    <div class="modal fade bs-modal-lg" id="modal-plane" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                                                    <h4 class="modal-title">要给 <?= $city->name  ?> 添加这些机场吗?</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                 <table class="table table-hover">
+                                                    <tbody id="update-modal-table-plane">
+                                                    </tbody>
+                                                </table>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" id = "update-modal-plane-quit" class="btn dark btn-outline" data-dismiss="modal">退出</button>
+                                                    <button type="button" id = "update-modal-plane-submit" class="btn green" data-dismiss = "modal">提交</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                     </div>
