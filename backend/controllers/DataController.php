@@ -70,33 +70,47 @@ class DataController extends BackendabstractController {
         return $rows; 
     }
     public function actionCitys(){
-        $mem = Yii::$app->memcache;
-        if($mem->exists('onlineCitysCache')){
-            $rows = json_decode($mem->get('onlineCitysCache') , true); 
-        }else{
-            $query = new Query();
-            $query->select('*')->from('citys');
-            $rows = $query->all();
-            $value = json_encode($rows);
-            $mem->set('onlineCitysCache' , $value);
-        }
+        $query = new Query();
+        $query->select('*')->from('citys');
+        $rows = $query->all();
         $this->render('citys' , ['rows' => $rows]);
     }
     public function actionUpdatecitys(){
         $request = Yii::$app->request;
+        $selectedPlanes = [];
+        $selectedTrains = [];
         $id = $request->get('id');
         $city = Citys::findOne(['id' => $id]); 
         if(empty($city)){
            $this->redirect('index/index'); 
         }
-        var_dump($city->planestationforcities);
-        die();
+        foreach($city->planestationforcities as $pc){
+            $selectedPlanes[] = Planestations::findOne(['id' => $pc->planestationid]);
+        }
+        foreach($city->trainstationforcities as $tc){
+            $selectedTrains[] = Trainstations::findOne(['id' => $tc->trainstationid]);
+        }
         $planeRows = $this->_getPlaneData();
         $trainRows = $this->_getTrainData();
+        $mem = Yii::$app->memcache;
+        if($mem->exists('sugTrainCache-'.$city->id) && $mem->exists('sugPlaneCache-'.$city->id)){
+            $trainSug = json_decode($mem->get('sugTrainCache-'.$city->id) , true); 
+            $planeSug = json_decode($mem->get('sugPlaneCache-'.$city->id) , true); 
+        }else{
+            $planeSug =  $this->_getSug($city->name , '机场');
+            $trainSug =  $this->_getSug($city->name , '火车站');
+            $mem->set('sugTrainCache-'.$city->id , json_encode($trainSug));
+            $mem->set('sugPlaneCache-'.$city->id , json_encode($planeSug));
+        }
         $this->render('updatecitys' , [
             'planeRows' => $planeRows,
             'trainRows' => $trainRows,
             'city'      => $city,
+            'selectedTrains' => $selectedTrains,
+            'selectedPlanes'  => $selectedPlanes,
+            'trainSug'  => $trainSug,
+            'planeSug'  => $planeSug,
+            
         ]);
     }
     public function actionAddtrainforcity(){
@@ -127,6 +141,11 @@ class DataController extends BackendabstractController {
             $re['name'] = $t->name; 
             $re['code'] = $t->code;
             $returnData[] = $re;
+        }
+        $trainNum = count($returnData);
+        $city->trainstationnum += $trainNum;
+        if(!$city->save()){
+             throw new \yii\web\ServerErrorHttpException(); 
         }
         return json_encode($returnData);
     }
@@ -159,6 +178,34 @@ class DataController extends BackendabstractController {
             $re['code'] = $p->code;
             $returnData[] = $re;
         }
+        $trainNum = count($returnData);
+        $city->planestationnum += $trainNum;
+        if(!$city->save()){
+             throw new \yii\web\ServerErrorHttpException(); 
+         }
         return json_encode($returnData);
+    }
+    private function _getSug($city = '' , $type = '火车站'){
+        $ch = curl_init(); 
+       $re = [];
+       $url = 'http://api.map.baidu.com/place/v2/search?q='.$type.'&region='.$city.'&output=json&ak=e6G3gcO5YnONKrrt1LZKLP6K&page_size=20&scope=1&city_limit=true&tag='.$type;
+       curl_setopt($ch,CURLOPT_URL, $url);
+       curl_setopt($ch, CURLOPT_HEADER, true);
+       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+       $response = curl_exec($ch);
+       if(curl_getinfo($ch, CURLINFO_HTTP_CODE) == '200') {
+            $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $header = substr($response, 0, $headerSize);
+            $body = json_decode(substr($response, $headerSize) , true);
+            foreach( $body['results'] as $b){
+                $r = [];
+                $r['name'] = $b['name'];
+                $r['address'] = isset($b['address']) ? $b['address']:'no data';
+                $re[] = $r;
+            } 
+            return $re;
+       }else{
+            return [];
+       }
     }
 }

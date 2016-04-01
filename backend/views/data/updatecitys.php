@@ -1,6 +1,7 @@
        
 <?php
 use yii\widgets\LinkPager;
+use yii\helpers\Url;
 $this->title = '更新城市数据';
 $this->params['breadcrumbs'][] = $this->title;
 $this->params['bigHeader'] = '城市数据';
@@ -39,6 +40,9 @@ $this->registerJsFile("http://go.king-liu.net/update-citys-stations.js");
                                             <a href="#tab_plane" data-toggle="tab" aria-expanded="true">机场</a>
                                         </li>
                                         <li class="">
+                                            <a href="#tab_sug" data-toggle="tab" aria-expanded="false">建议</a>
+                                        </li>
+                                        <li class="">
                                             <a href="#tab_selected" data-toggle="tab" aria-expanded="false">已选择的</a>
                                         </li>
                                         
@@ -50,9 +54,61 @@ $this->registerJsFile("http://go.king-liu.net/update-citys-stations.js");
                                         <div class="tab-pane fade active in" id="tab_plane">
                                         <?= $this->render('_planeTable.php' , [ 'rows' => $planeRows ]) ?> 
                                         </div>
+                                        <div class="tab-pane fade" id="tab_sug">
+                                                 <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th> 名称</th>
+                                                        <th> 地址 </th>
+                                                        <th> 类型 </th>
+                                                    </tr>
+                                                </thead>
+                                                    <tbody>
+                                        <?php
+                                            foreach($trainSug  as $t){
+                                                echo '<tr>
+                                                        <td>'.$t['name'].'</td>
+                                                        <td>'.$t['address'].'</td>
+                                                        <td>火车站</td>
+                                                    </tr>';
+                                            } 
+                                            foreach($planeSug  as $t){
+                                                echo '<tr>
+                                                        <td>'.$t['name'].'</td>
+                                                        <td>'.$t['address'].'</td>
+                                                        <td>机场</td>
+                                                    </tr>';
+                                            } 
+                                        ?>
+                                                    </tbody>
+                                        </table>
+                                        </div>
                                         <div class="tab-pane fade" id="tab_selected">
                                                  <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th> 名称</th>
+                                                        <th> 类型 </th>
+                                                        <th> 代码 </th>
+                                                    </tr>
+                                                </thead>
                                                     <tbody id="selected-data-table">
+                                                    <?php
+                                                        foreach($selectedPlanes as $sp){
+                                                            echo '<tr>
+                                                                <td>'.$sp->name.'</td><td>机场</td>
+                                                                <td>'.$sp->code.'</td>
+                                                                <td><a href="'.Url::toRoute(['data/deletecityplanes' , 'id'=>$sp->id , 'cityid'=>$city->id ]).'">删除</a></td>
+                                                                </tr>';
+                                                        }
+                                                        foreach($selectedTrains as $st){
+                                                            echo '<tr>
+                                                                <td>'.$st->name.'</td><td>火车站</td>
+                                                                <td>'.$st->code.'</td>
+                                                                <td><a href="'.Url::toRoute(['data/deletecitytrains' , 'id'=>$st->id ,'cityid' => $city->id ]).'">删除</a></td>
+                                                                </tr>';
+                                                        }
+                                                    ?>
                                                     </tbody>
                                                 </table>
                                         </div>
