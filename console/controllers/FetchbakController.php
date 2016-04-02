@@ -10,7 +10,7 @@ use console\models\Trainlines;
 use linslin\yii2\curl;
 use yii\db\Query;
 
-class FetchController extends Controller {
+class FetchbakController extends Controller {
     /**
      * get train data useag : ./yii fetch/trainout cityid
      * */
@@ -98,15 +98,36 @@ class FetchController extends Controller {
         return $rows;
     }
     public function actionPlane(){
-        
+        var_dump($this->_getPlaneLine());
     }
-    public function actionTest(){
-       $user = new Frontuser(); 
-       $user->username = 'lk1';
-       $user->password = '123';
-       $user->ext = '123';
-       var_dump($user->validate());
-       var_dump($user->getErrors());
+    private function _getPlaneLine(){
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'http://m.csair.com/mbpwas.shtml?lang=zh&_=1458399193163');
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Accept: application/json",
+            "User-Agent: Mozilla/5.0 (Linux; U; Android 4.4.4; zh-cn; MI 4LTE Build/KTU84P) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/42.0.0.0 Mobile Safari/537.36 XiaoMi/MiuiBrowser/2.1.1",
+            "Origin: http://m.csair.com",
+            "Cookie: BIGipServerpool_m.csair.com_172.16.47.9-11=3875449024.20480.0000; WT-FPC=id=113.250.152.54-3465215408.30507502:lv=1458399088353:ss=1458399088353:fs=1458399088353:pn=1:vn=1; JSESSIONID=66p6cy283jxu8soett30fjfy",
+            "Content-Type: application/x-www-form-urlencoded",
+            "Referer: http://m.csair.com/touch/com.csair.mbp.index/index.html",
+         ]
+       );
+        $body = [
+               "url" => "CSMBP/data/order/queryFlightByAirport.do?type=MOBILE&type=MOBILE&token=E0xywTTmPMVVPd5B8u4cPvBMW2B4ZKPwpZ194hyuI%2FoDWG35pqOxAw%3D%3D&lang=zh",
+               "pagebase" => "http://m.csair.com",
+               "page" => "{\"page\":{\"ARRAIRPORT\":\"CTU\",\"DEPAIRPORT\":\"PEK\",\"DATE\":\"20160328\"}}",
+               ];
+        $body = http_build_query($body);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        $resp = curl_exec($ch);
+        if(!$resp) {
+            return false;
+        } else {
+            return json_decode($resp , true);
+        }
+        curl_close($ch);
     }
-
 }

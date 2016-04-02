@@ -65,4 +65,27 @@ class Citys extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Trainstationforcity::className(), ['cityid' => 'id']);
     }
+    public function getTrains()
+    {
+        $trainList = [];
+        foreach($this->trainstationforcities as $tc){
+            $train = Trainstations::findOne(['id' => $tc->trainstationid]);
+            if(!empty($train)){
+                $trainList[] = $train;
+            }
+        }  
+        return $trainList;
+    }
+    public function getPlanes()
+    {
+        $planeList = [];
+        foreach($this->planestationforcities as $pc){
+            $plane = Planestations::findOne(['id' => $pc->planestationid]);
+            if(!empty($plane)){
+                $planeList[] = $plane;
+            }
+        }  
+        return $planeList;
+        
+    }
 }

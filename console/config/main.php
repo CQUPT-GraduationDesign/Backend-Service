@@ -27,6 +27,16 @@ return [
             'password' => '1234567890',
             'charset' => 'utf8',
         ],
+        'memcache' => [
+            'class' => 'yii\caching\MemCache',
+            'servers' => [
+                [
+                    'host' => '127.0.0.1',
+                    'port' => 11211,
+                    'weight' => 100,
+                ],
+            ],
+        ],
     ],
     'params' => $params,
 ];
