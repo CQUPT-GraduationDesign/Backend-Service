@@ -3,9 +3,8 @@
 namespace console\models;
 
 use Yii;
-
 /**
- * This is the model class for table "trainlines".
+ * This is the model class for table "trainlinesout".
  *
  * @property integer $id
  * @property integer $cityid
@@ -23,14 +22,14 @@ use Yii;
  * @property Citys $city
  * @property Trainstations $train
  */
-class Trainlines extends \yii\db\ActiveRecord
+class Trainlinesout extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'trainlines';
+        return 'trainlinesout';
     }
 
     /**
@@ -40,7 +39,7 @@ class Trainlines extends \yii\db\ActiveRecord
     {
         return [
             [['cityid', 'trainid', 'cityname', 'fromtrain', 'totrain', 'traintype', 'trainno', 'starttime', 'endtime', 'duration', 'rawData'], 'required'],
-            ['fromtrain' , 'unique' , 'targetAttribute' => ['fromtrain' , 'totrain' , 'trainno' , 'starttime'] , 'message' => 'data is not unique'],
+            ['fromtrain' , 'unique' , 'targetAttribute' => ['fromtrain' , 'totrain' , 'trainno' , 'starttime'] , 'message' => 'data is not unique [trainlines OUT]'],
             [['cityid', 'trainid'], 'integer'],
             [['rawData'], 'string'],
             [['cityname', 'fromtrain', 'totrain', 'traintype', 'trainno', 'starttime', 'endtime', 'duration'], 'string', 'max' => 255]

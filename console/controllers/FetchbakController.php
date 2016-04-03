@@ -92,15 +92,47 @@ class FetchbakController extends Controller {
         return $response['data']['trainList'];
     }
     private function _getTrainData(){
-       $query = new Query();
+        $query = new Query();
         $query->select('code , id , name')->from('trainstations');
         $rows = $query->all();
         return $rows;
     }
-    public function actionPlane(){
-        var_dump($this->_getPlaneLine());
+    /**
+     * fetch the plane data . useage: ./yii fetch/planein cityid
+     * */
+    public function actionPlanein($cityid = null){
+        $time = '20160405';
+        if(empty($cityid)){
+            echo "cityid is null";
+            exit;
+        } 
+        $city = Citys::findOne(['id' => $cityid]);
+        $planeOfCity = $city->getPlanes();
+        $planeData = $this->_getPlaneData();
+        foreach($planeOfCity  as $pc){
+                $dest = $pc->code;  
+            foreach($planeData as $pd){
+                $from = $pd['code']; 
+                $data = $this->_getPlaneLine($from , $dest , $time);
+                if(isset($data['page'])){
+                    continue;
+                }
+                var_dump($data);
+                die();
+           }
+        } 
     }
-    private function _getPlaneLine(){
+    private function _getPlaneData(){
+        $query = new Query();
+        $query->select('code , id , name , city')->from('planestations');
+        $rows = $query->all();
+        return $rows;
+    }
+    private function _getPlaneLine($from = null , $dest = null , $time = null){
+        if(empty($from) || empty($dest) || empty($time)){
+            echo "getPlaneLine parms error \n";
+            exit(2);
+        }
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://m.csair.com/mbpwas.shtml?lang=zh&_=1458399193163');
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
@@ -117,7 +149,7 @@ class FetchbakController extends Controller {
         $body = [
                "url" => "CSMBP/data/order/queryFlightByAirport.do?type=MOBILE&type=MOBILE&token=E0xywTTmPMVVPd5B8u4cPvBMW2B4ZKPwpZ194hyuI%2FoDWG35pqOxAw%3D%3D&lang=zh",
                "pagebase" => "http://m.csair.com",
-               "page" => "{\"page\":{\"ARRAIRPORT\":\"CTU\",\"DEPAIRPORT\":\"PEK\",\"DATE\":\"20160328\"}}",
+               "page" => "{\"page\":{\"ARRAIRPORT\":\"".$dest."\",\"DEPAIRPORT\":\"".$from."\",\"DATE\":\"".$time."\"}}",
                ];
         $body = http_build_query($body);
         curl_setopt($ch, CURLOPT_POST, 1);

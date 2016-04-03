@@ -6,11 +6,54 @@ use console\models\Trainstations;
 use console\models\Planestations;
 use console\models\Citys;
 use console\models\Frontuser;
-use console\models\Trainlines;
+use console\models\Trainlinesout;
+use console\models\Trainlinesin;
 use linslin\yii2\curl;
 use yii\db\Query;
 
 class FetchController extends Controller {
+    /**
+     * get train data useag : ./yii fetch/trainin cityid
+     * */
+    public function actionTrainin($cityid = null){
+        $fetchTime  = '2016-04-10';
+        if(empty($cityid)){
+            echo "city input is null . \n";
+            return 1;
+        }
+        $query = new Query();   
+        $query->select('*')->where('id = '.$cityid)->from('citys');
+        $city = $query->all();
+        if(empty($city)){
+            echo "cityid is wrong \n";
+            return 2;
+        }
+        $trainList = [];
+        $city = Citys::findOne(['id'=>$city[0]['id']]); 
+        $trainData  = $this->_getTrainData();
+        echo "Data Ready finished \n";
+        $savedNum = 0;
+        $dest = $city->name; 
+        foreach($trainData as $fromStation){
+                $start = $fromStation['name']; 
+                $url = 'http://apis.baidu.com/qunar/qunar_train_service/s2ssearch?version=1.0&from='.$start.'&to='.$dest.'&date='.$fetchTime;
+                $data = $this->_trainGet($url);
+                if($data == false){
+                    continue;
+                }else{
+                    foreach( $data as $d){
+                        $line  =  new Trainlinesin(); 
+                        $isSaved = $this->_saveTrainLine($line , $d, $city->name , $city->id, $fromStation['id']);
+                        // last param(trainid) build  the IN-graph 
+                        if($isSaved === true){
+                            echo ++$savedNum.' saved succeed from'.$d['from'].'to :'.$d['to'].'train No :'.$d['trainNo']."\n";
+                        }else{
+                           echo $isSaved."\n"; 
+                        }
+                    }
+                }
+           }
+    }
     /**
      * get train data useag : ./yii fetch/trainout cityid
      * */
@@ -41,7 +84,9 @@ class FetchController extends Controller {
                     continue;
                 }else{
                     foreach( $data as $d){
-                        $isSaved = $this->_saveTrainLine($d, $city->name , $city->id, $dstStation['id']);
+                        $line  =  new Trainlinesout(); 
+                        $isSaved = $this->_saveTrainLine($line , $d, $city->name , $city->id, $dstStation['id']);
+                        // last param(trainid) build  the OUT-graph 
                         if($isSaved === true){
                             echo ++$savedNum.' saved succeed from'.$d['from'].'to :'.$d['to'].'train No :'.$d['trainNo']."\n";
                         }else{
@@ -51,9 +96,8 @@ class FetchController extends Controller {
                 }
            }
     }
-    private function _saveTrainLine($data = null , $cityName = null 
+    private function _saveTrainLine($line = null , $data = null , $cityName = null 
                                     , $cityId = null , $toTrainId = null){
-        $line  =  new Trainlines(); 
         $line->cityid = $cityId;
         $line->trainid = $toTrainId;
         $line->cityname = $cityName;
