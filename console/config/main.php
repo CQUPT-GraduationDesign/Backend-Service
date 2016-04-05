@@ -20,11 +20,20 @@ return [
                 ],
             ],
         ],
+        /*
         'db' => [
             'class' => 'yii\db\Connection',
             'dsn' => 'mysql:host=127.0.0.1;dbname=go',
             'username' => 'root',
             'password' => '1234567890',
+            'charset' => 'utf8',
+        ],
+         */
+        'db' => [
+            'class' => 'yii\db\Connection',
+            'dsn' => 'mysql:host=rds3ubryejizzya.mysql.rds.aliyuncs.com;dbname=ryyt39m9q752w2v7',
+            'username' => 'ryyt39m9q752w2v7',
+            'password' => '8gp5kmn9A',
             'charset' => 'utf8',
         ],
         'memcache' => [
