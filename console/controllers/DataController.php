@@ -5,9 +5,12 @@ use yii\console\Controller;
 use console\models\Trainstations;
 use console\models\Planestations;
 use console\models\Citys;
-
-class DataController extends Controller
-{
+/**
+ * Init the data config (like online city , train stations , plane stations)
+ *
+ *
+ * */
+class DataController extends Controller {
     public function actionInserttrain(){
         $nums = 0;
         $data  = file_get_contents(Yii::$app->params['trainStationsData']);
@@ -69,5 +72,13 @@ class DataController extends Controller
             }
         }
         echo "\n\n\n".$nums;
+    }
+    /**
+     * generate the longest duration time between the configured(onlined) citys for next data gen
+     *
+     * */
+    public function actionGenlongtime(){
+    
+    
     }
 }
