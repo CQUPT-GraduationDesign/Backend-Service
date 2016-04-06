@@ -23,7 +23,7 @@ class FetchController extends Controller {
             echo "city input is null . \n";
             return 1;
         }
-        $query = new Query();   
+        $query = new uery();   
         $query->select('*')->where('id = '.$cityid)->from('citys');
         $city = $query->all();
         if(empty($city)){

@@ -18,7 +18,11 @@ class Frontuser extends \yii\db\ActiveRecord implements IdentityInterface {
     }
     public static function findIdentityByAccessToken($token, $type = null) {
         $security = Yii::$app->getSecurity();
-        return static::findOne(['username' => $security->decryptByKey(base64_decode($token) , Yii::$app->params['securityPass'])]);
+        if($security->decryptByKey(base64_decode($token) , Yii::$app->params['securityPass']) === false){
+            return null;
+        }else{
+            return static::findOne(['username' => $security->decryptByKey(base64_decode($token) , Yii::$app->params['securityPass'])]);
+        }
     }
     public function getId(){
 

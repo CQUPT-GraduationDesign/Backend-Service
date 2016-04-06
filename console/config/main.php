@@ -36,6 +36,14 @@ return [
             'password' => '8gp5kmn9A',
             'charset' => 'utf8',
         ],
+        'rediscache' => [
+               'class' => 'yii\redis\Cache',
+               'redis' => [
+                    'hostname' => '127.0.0.1',
+                    'port' => 6379,
+                    'database' => 0,
+               ],
+        ],
         'memcache' => [
             'class' => 'yii\caching\MemCache',
             'servers' => [

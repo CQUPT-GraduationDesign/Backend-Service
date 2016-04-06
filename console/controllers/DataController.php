@@ -5,6 +5,10 @@ use yii\console\Controller;
 use console\models\Trainstations;
 use console\models\Planestations;
 use console\models\Citys;
+use console\models\Maxtrainduration;
+use console\models\Trainlinesout;
+use console\models\Trainlinesin;
+use yii\db\Query;
 /**
  * Init the data config (like online city , train stations , plane stations)
  *
@@ -74,11 +78,100 @@ class DataController extends Controller {
         echo "\n\n\n".$nums;
     }
     /**
-     * generate the longest duration time between the configured(onlined) citys for next data gen
+     * generate the longest duration time between the configured(onlined) citys for next data ge
      *
      * */
     public function actionGenlongtime(){
+        $query = new Query();
+        $citysFrom = Citys::find()->all();   
+        $citysTo = Citys::find()->all();   
+        foreach($citysFrom as $cf){
+            foreach($citysTo as $ct){
+                if($cf->id === $ct->id){
+                    continue;
+                } 
+                $fromTrains = $cf->getTrains();
+                $toTrains = $ct->getTrains();
+                $reData = [];
+                foreach( $fromTrains as $ft){
+                    foreach($toTrains as $tt){
+                         $query->select('id , fromtrain , totrain , duration')->where('fromtrain = "'.$ft->name.'" and totrain = "'.$tt->name.'"')->from('trainlinesin'); 
+                         $durDataIn =  $query->all();
+                         $query->select('id , fromtrain , totrain , duration')->where('fromtrain = "'.$ft->name.'" and totrain = "'.$tt->name.'"')->from('trainlinesout'); 
+                         $durDataOut = $query->all();
+                         $reData = array_merge($durDataIn , $durDataOut , $reData);
+                    } 
+                }
+                $maxData = $this->_getMaxDuration($reData);
+                if($maxData != false){
+                    $isSaved = $this->_saveMaxDuration($maxData , $cf , $ct); 
+                    if($isSaved === true){
+                        echo $cf->name.' -----> '.$ct->name.'  max saved succeed'."\n";
+                    }else{
+                        var_dump($isSaved);
+                    }
+                }
+            }
+        }
     
-    
+    }
+    private function _saveMaxDuration($maxData , $from , $to){
+        if(empty($maxData) || empty($from) || empty($to)){
+            echo "params error";
+            exit(2);
+        } 
+        $max = new Maxtrainduration();
+        $max->fromcityid = $from->id;
+        $max->tocityid = $to->id;
+        $max->maxduration = $maxData['maxTime'];
+        $max->trainlineid = $maxData['trainline']['id'];
+        $rawData = Trainlinesin::findOne(['id' => $maxData['trainline']['id'] , 'duration' => $maxData['trainline']['duration']]); 
+        if(empty($rawData)){
+            $rawData = Trainlinesout::findOne(['id' => $maxData['trainline']['id'] , 'duration' => $maxData['trainline']['duration']]); 
+        }
+        $max->trainlinerawdata = json_encode($rawData->attributes); 
+        if($max->save()){
+            return true;
+        }else{
+            return $max->getErrors();
+        }
+    }
+    private function _getMaxDuration($durData = null){
+        if(empty($durData)){
+            return false;
+        }
+        $re['maxTime'] = 0;
+        $re['trainline'] = null;
+        foreach($durData as $d){
+           $tempTime = $this->_getTime($d['duration']); 
+           if($re['maxTime'] < $tempTime){
+                $re['maxTime'] = $tempTime;
+                $re['trainline'] = $d;
+           }
+        }
+        return $re;
+    }
+    /**
+     * @brief a helper function to get real duration
+     * @return seconds(int)
+     * */
+    private function _getTime($string){
+        $re = 0;
+        $i  =  0;
+        $formatString = ['天' , '小时' ,'分'];
+        $factors = [3600*24 , 3600 , 60];
+        if(empty($string)){
+            return false;
+        } 
+        for( ; $i < 3 ; $i++){
+            $explodeArr = explode($formatString[$i] , $string); 
+            if(count($explodeArr) === 2){
+                $re += ((int)$explodeArr[0]) * $factors[$i]; 
+                $string = $explodeArr[1];
+            }else{
+                $string = $explodeArr[0]; 
+            }
+        } 
+        return $re;
     }
 }

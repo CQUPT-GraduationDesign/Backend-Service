@@ -62,15 +62,20 @@ class UserController extends ActiveController {
         $security = Yii::$app->getSecurity();
         if($request->isPost){
             $username = $request->post('username');
-            $User = Frontuser::findOne(['username'=>$username]);
+            $password = $request->post('password');
+            $User = Frontuser::findOne(['username'=>$username , 'password' => $password ]);
             if(empty($User)){
-                return ['code'=>404 , 'message'=>'用户不存在'];
+                return ['code'=>407 , 'message'=>'用户名或密码错误'];
             }else{
+                $data = [
+                    'username' => $User->username,
+                    'ext'      => json_decode($User->ext , true),
+                ];
                 return [
                     'code'=>200 , 
                     'message' => '登录成功' , 
                     'access_token' => base64_encode($security->encryptByKey($User->username,Yii::$app->params['securityPass'])) , 
-                    'data' => json_decode($User->ext)
+                    'data' => $data,
                 ];
             } 
         }else{

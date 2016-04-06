@@ -6,6 +6,7 @@ use yii\web\ForbiddenHttpException;
 use yii\filters\auth\QueryParamAuth;
 use yii\filters\AccessControl;
 use yii\filters\auth\CompositeAuth;
+use api\models\Frontuser;
 
 class ResController extends Controller {
 
@@ -22,7 +23,7 @@ class ResController extends Controller {
             'rules' => [
                 [
                    'allow' => true,
-                   'actions' => ['list'],
+                   'actions' => ['list','test'],
                    'roles' => ['@'],
                    'denyCallback' => function ($rule, $action){
                         throw new \Exception('登录后访问','407');
@@ -34,6 +35,9 @@ class ResController extends Controller {
     }
     public function actionList(){
         return ['data'=>['after authorization']];
+    }
+    public function actionTest(){
+        var_dump(Yii::$app->user->identity);
     }
 
 

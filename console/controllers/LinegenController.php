@@ -10,21 +10,36 @@ use console\models\Trainlinesout;
 use console\models\Trainlinesin;
 use console\models\Planelinein;
 use console\models\Planelineout;
+use console\models\Maxtrainduration;
+use api\models\Frontuser;
+
 /**
  * generate the line for applications
  *
  * */
 class LinegenController extends Controller {
-    
+    private $_maxDurationBetweenCity = null;
     /**
-     *
+     * cache names like that : trainTransfer_fromcityid_tocityid
+     * */
+    private $_trainTransferRedisKeyPre = 'trainTransfer_';
+    /**
+     * cache names like that : trainTransfer_fromcityid_tocityid
+     * */
+    private $_trainTransferMemKeyPre = 'trainTransfer_';
+    /**
+     * generate train transfer lines . useage: ./yii linegen/train fromcityid tocityid
      *  
      * */
     public function actionTrain(){
        $fromCity = Citys::findOne(['id' => 1]); 
-       $destCity = Citys::findOne(['id' => 2]); 
+       $destCity = Citys::findOne(['id' => 25]); 
+       $this->_maxDurationBetweenCity = Maxtrainduration::findOne(['fromcityid' => $fromCity->id , 'tocityid' => $destCity->id]);
        $r = $this->_calTrainLines($fromCity , $destCity);
-       var_dump($r);
+       var_dump($r); 
+    }
+    public function actionTest(){
+        var_dump(Frontuser::findOne(['username' => true]));
     }
     /**
      * @param: ( Citys )from , dest
@@ -39,21 +54,33 @@ class LinegenController extends Controller {
                 if($e['totrain'] == $i['fromtrain']){
                     if(is_array( $extArray = $this->_filterTrainData($e , $i))){
                         $re = [
-                            'start' => [
-                                'from' => $e['fromtrain'],
-                                'to' =>   $e['totrain'],
-                                'startTime' => $e['starttime'],
-                                'endTime'   => $e['endtime'],
-                                'duration'  => $e['duration'],
+                            'dataInfo' => [
+                                'fromcityid' => $from->id,
+                                'tocityid'   => $dest->id,
+                                'fromcityname' => $from->name,
+                                'tocityname'  => $dest->name,
                             ],
-                            'middle' => [
-                                'from'      => $i['fromtrain'],
-                                'to'        => $i['totrain'],
-                                'startTime' => $i['starttime'],
-                                'endTime'   => $i['endtime'],
-                                'duration'  => $i['duration'],
+                            'stationData' => [
+                                'start' => [
+                                    'from' => $e['fromtrain'],
+                                    'to' =>   $e['totrain'],
+                                    'trainno' => $e['trainno'],
+                                    'startTime' => $e['starttime'],
+                                    'endTime'   => $e['endtime'],
+                                    'duration'  => $e['duration'],
+                                ],
+                                'middle' => [
+                                    'from'      => $i['fromtrain'],
+                                    'to'        => $i['totrain'],
+                                    'trainno'   => $i['trainno'],
+                                    'startTime' => $i['starttime'],
+                                    'endTime'   => $i['endtime'],
+                                    'duration'  => $i['duration'],
+                                ],
                             ],
-                            'ext'    => $extArray, 
+                            'ext'    =>[
+                                'order' => $extArray, 
+                                ],
                         ];
                         $result[] = $re;
                     }
@@ -62,8 +89,10 @@ class LinegenController extends Controller {
         }
         return $result;
     }
-    public function actionTest(){
-    }
+    /**
+     *
+     * filter valid data
+     * */
     private function  _filterTrainData($from , $to){
         date_default_timezone_set('PRC');
         if(empty($from) || empty($to)){
@@ -76,15 +105,24 @@ class LinegenController extends Controller {
         if($toStartTime - $fromEndTime  >= 2*3600){
             $extArray = []; 
             $extArray['transferSeconds'] =  $toStartTime - $fromEndTime ;
-            $extArray['onTrainDuration'] = (strtotime($from['starttime']) + $this->_getTime($from['duration'])) + (strtotime($to['starttime']) + $this->_getTime($to['duration']));
+            $extArray['onTrainDuration'] = $this->_getTime($from['duration']) + $this->_getTime($to['duration']);
             $extArray['wholeDuration']   = $extArray['transferSeconds'] + $extArray['onTrainDuration'];
-            return $extArray;
+            if(!empty($max) ){
+                if($extArray['onTrainDuration'] < 1.0*$this->_maxDurationBetweenCity->maxduration){
+                    return $extArray;
+                }else{
+                    return false;
+                }
+            }else{
+                return $extArray;
+            }
         }else{
             return false;
         }
     }
     /**
      * @brief a helper function to get real duration
+     * @return seconds(int)
      * */
     private function _getTime($string){
         $re = 0;
@@ -107,9 +145,7 @@ class LinegenController extends Controller {
     }
     private function _getTrainLineData($cityId , $tableName = null){
         $query = new Query(); 
-        $query->select('cityid ,cityname , trainid , fromtrain , totrain , duration , starttime , endtime')->where('cityid = '.$cityId)->from($tableName);
+        $query->select('cityid ,cityname , trainid , fromtrain , totrain , duration ,trainno , starttime , endtime')->where('cityid = '.$cityId)->from($tableName);
         return $query->all();
     }
-
-
 }
