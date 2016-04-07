@@ -11,6 +11,7 @@ use console\models\Trainlinesin;
 use console\models\Planelinein;
 use console\models\Planelineout;
 use console\models\Maxtrainduration;
+use console\models\Transfertrainline;
 use api\models\Frontuser;
 
 /**
@@ -18,28 +19,66 @@ use api\models\Frontuser;
  *
  * */
 class LinegenController extends Controller {
-    private $_maxDurationBetweenCity = null;
+    private    $formatString = ['天' , '小时' ,'分'];
+    private    $factors = [ 86400 , 3600 , 60];
+    private    $_maxDurationBetweenCity = null;
     /**
-     * cache names like that : trainTransfer_fromcityid_tocityid
-     * */
-    private $_trainTransferRedisKeyPre = 'trainTransfer_';
-    /**
-     * cache names like that : trainTransfer_fromcityid_tocityid
-     * */
-    private $_trainTransferMemKeyPre = 'trainTransfer_';
-    /**
-     * generate train transfer lines . useage: ./yii linegen/train fromcityid tocityid
+     * generate train transfer lines . useage: ./yii linegen/train fromcityid 
      *  
      * */
-    public function actionTrain(){
-       $fromCity = Citys::findOne(['id' => 1]); 
-       $destCity = Citys::findOne(['id' => 25]); 
-       $this->_maxDurationBetweenCity = Maxtrainduration::findOne(['fromcityid' => $fromCity->id , 'tocityid' => $destCity->id]);
-       $r = $this->_calTrainLines($fromCity , $destCity);
-       var_dump($r); 
+    public function actionTrain($cityid = null){
+        ini_set('memory_limit', '-1');
+        $destCities = Citys::find()->all();
+        $fromCity = Citys::findOne(['id' => $cityid]);
+        if(empty($fromCity)){
+            echo 'cityid params error';
+            die();
+        }
+       foreach($destCities as $destCity){ 
+            if($destCity->id === $fromCity->id){
+                continue;
+            }
+            $nums = 0;
+            $this->_maxDurationBetweenCity = Maxtrainduration::findOne(['fromcityid' => $fromCity->id , 'tocityid' => $destCity->id]);
+            if(!empty($this->_maxDurationBetweenCity)){
+                echo $fromCity->id.' ---->直达 '.$destCity->id.' 最大时间为: '.($this->_maxDurationBetweenCity->maxduration/3600).' 小时'."\n";
+            }else{
+                echo 'Begin : '.$fromCity->id.' -----> '.$destCity->id."\n";
+            }    
+            $r = $this->_calTrainLines($fromCity , $destCity);
+            foreach($r as $d){
+                $isSaved = $this->_saveTrainToDb($d);
+                if($isSaved === true){
+                    echo ++$nums.' succeed '.$fromCity->id.'  -->  '.$destCity->id."\n";
+                }else{
+                    var_dump($isSaved);
+                }
+            }
+            unset($r);
+       }
     }
     public function actionTest(){
         var_dump(Frontuser::findOne(['username' => true]));
+    }
+    private function _saveTrainToDb($data){
+        if(empty($data)){
+            return;
+        } 
+        $line = new Transfertrainline();
+        $line->fromcityid = $data['dataInfo']['fromcityid'];
+        $line->tocityid   = $data['dataInfo']['tocityid'];
+        $line->fromcityname = $data['dataInfo']['fromcityname'];
+        $line->tocityname   = $data['dataInfo']['tocityname'];
+        $line->startData    = json_encode($data['stationData']['start']);
+        $line->middleData   = json_encode($data['stationData']['middle']);
+        $line->transferSeconds = $data['ext']['order']['transferSeconds'];
+        $line->onTrainDuration = $data['ext']['order']['onTrainDuration'];
+        $line->wholeDuration = $data['ext']['order']['wholeDuration'];
+        if($line->save()){
+            return true;
+        }else{
+            return $line->getErrors();
+        }
     }
     /**
      * @param: ( Citys )from , dest
@@ -102,20 +141,12 @@ class LinegenController extends Controller {
         $fromEndTime = strtotime($from['starttime']) + $this->_getTime($from['duration']);
         $toStartTime = strtotime($to['starttime']);
         // 中间有 2  小时用来换乘
-        if($toStartTime - $fromEndTime  >= 2*3600){
+        if(Yii::$app->params['shortestTransferTime'] < ($toStartTime - $fromEndTime) ){
             $extArray = []; 
             $extArray['transferSeconds'] =  $toStartTime - $fromEndTime ;
             $extArray['onTrainDuration'] = $this->_getTime($from['duration']) + $this->_getTime($to['duration']);
             $extArray['wholeDuration']   = $extArray['transferSeconds'] + $extArray['onTrainDuration'];
-            if(!empty($max) ){
-                if($extArray['onTrainDuration'] < 1.0*$this->_maxDurationBetweenCity->maxduration){
-                    return $extArray;
-                }else{
-                    return false;
-                }
-            }else{
-                return $extArray;
-            }
+             return $extArray;
         }else{
             return false;
         }
@@ -127,15 +158,13 @@ class LinegenController extends Controller {
     private function _getTime($string){
         $re = 0;
         $i  =  0;
-        $formatString = ['天' , '小时' ,'分'];
-        $factors = [3600*24 , 3600 , 60];
         if(empty($string)){
             return false;
         } 
         for( ; $i < 3 ; $i++){
-            $explodeArr = explode($formatString[$i] , $string); 
+            $explodeArr = explode($this->formatString[$i] , $string); 
             if(count($explodeArr) === 2){
-                $re += ((int)$explodeArr[0]) * $factors[$i]; 
+                $re += ((int)$explodeArr[0]) * $this->factors[$i]; 
                 $string = $explodeArr[1];
             }else{
                 $string = $explodeArr[0]; 
