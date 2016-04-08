@@ -58,10 +58,10 @@ class BackendabstractController extends Controller {
                                                 'icon' => 'fa-tv',
                                                 'isAc' => false,
                                                 'items' => [
-                                                        ['name' => '火车路线','icon'=>'fa-train' ,'url' => Url::toRoute('fetch/train') , 'isAc'=>false],
-                                                        ['name' => '航班路线','icon'=>'fa-plane' ,'url' => Url::toRoute('fetch/plane') , 'isAc'=>false],
-                                                        ['name' => '城市出图','icon'=>'fa-tv' ,'url' => Url::toRoute('fetch/export') , 'isAc'=>false],
-                                                        ['name' => '城市入图','icon'=>'fa-tv' ,'url' => Url::toRoute('fetch/export') , 'isAc'=>false],
+                                                        ['name' => '火车出图','icon'=>'fa-train' ,'url' => Url::toRoute('fetch/trainout') , 'isAc'=>false],
+                                                        ['name' => '火车入图','icon'=>'fa-train' ,'url' => Url::toRoute('fetch/trainin') , 'isAc'=>false],
+                                                        ['name' => '航班出图','icon'=>'fa-plane' ,'url' => Url::toRoute('fetch/planein') , 'isAc'=>false],
+                                                        ['name' => '航班入图','icon'=>'fa-plane' ,'url' => Url::toRoute('fetch/planeout') , 'isAc'=>false],
                                                     ],
                                             ]    
                                         ],    

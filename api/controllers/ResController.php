@@ -23,7 +23,7 @@ class ResController extends Controller {
             'rules' => [
                 [
                    'allow' => true,
-                   'actions' => ['list','test'],
+                   'actions' => ['test', 'list'],
                    'roles' => ['@'],
                    'denyCallback' => function ($rule, $action){
                         throw new \Exception('登录后访问','407');

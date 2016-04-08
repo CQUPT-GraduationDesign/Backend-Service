@@ -18,36 +18,62 @@ use yii\db\Query;
  * */
 class DatacacheController extends Controller {
     /**
-     * cache names like that : trainTransfer_fromcityid_tocityid
+     * cache names like that : trainTransfer_fromcityid_tocityid_default
      * */
-    private $_trainTransferRedisKeyPre = 'trainTransfer_';
-    /**
-     * cache names like that : trainTransfer_fromcityid_tocityid
-     * */
-    private $_trainTransferMemKeyPre = 'trainTransfer_';
+    private $_trainCachePre = 'trainTransfer_';
 
     private $_maxDurationBetweenCity = null;
-
+    
+    private $_mem = null;
+    private $_redis = null;
     /**
-     * cache train transfer data
+     * cache train transfer data useage : ./yii datacache/train
      * */
-    public function actionTrain(){
-        $fromCity = Citys::findOne(['id' => 8]);
+    public function actionTrain($cityid = null){
+        ini_set('memory_limit', '-1');
+        $orderConfig = [
+           'default'  => 'wholeDuration , onTrainDuration , transferSeconds',
+           'whole'    => 'wholeDuration',
+           'onTrain'  => 'onTrainDuration',
+           'transfer' => 'transferSeconds',
+        ];
+        $this->_mem = Yii::$app->memcache;
+        $this->_redis = Yii::$app->rediscache;
+        $fromCity =   Citys::findOne(['id' => $cityid]);
+        if(empty($fromCity)){
+            echo 'cityid is wrong';
+            exit(2);
+        }
         $destCities = Citys::find()->all();
         foreach($destCities as $destCity){
-            $this->_maxDurationBetweenCity = Maxtrainduration::findOne(['fromcityid' => $fromCity->id , 'tocityid' => $destCity->id]);
-            $allData = $this->_getTrainData($fromCity , $destCity);         
-            $filteredData = $this->_filterTrainData($allData);
-            unset($allData);
-            if(empty($filteredData)){
-                var_dump(0);
+            if($fromCity->id == $destCity->id){
                 continue;
             }
-            $cachedData = array_slice($filteredData , 0 , 200);
-            var_dump(mb_strlen(json_encode($cachedData))/(1024));
+            $this->_maxDurationBetweenCity = Maxtrainduration::findOne(['fromcityid' => $fromCity->id , 'tocityid' => $destCity->id]);
+            foreach($orderConfig as $key => $order){
+                $allData = $this->_getTrainData($fromCity , $destCity , $order);         
+                $filteredData = $this->_filterTrainData($allData);
+                if(empty($filteredData)){
+                    $filteredData = $allData;
+                }
+                if(empty($filteredData)){
+                    echo "data is null\n";
+                    continue;
+                }
+                $cachedData = array_slice($filteredData , 0 , 200);
+                $key = $this->_trainCachePre.$fromCity->id.'_'.$destCity->id.'_'.$key; 
+                if($this->_mem->set($key , $cachedData) === true){
+                    echo $fromCity->id.' ------> '.$destCity->id.' mem succeed '."\n"; 
+                }
+                if($this->_redis->set($key , $cachedData) === true){
+                    echo $fromCity->id.' ------> '.$destCity->id.' redis succeed '."\n"; 
+                }
+                unset($allData);
+                unset($cachedData);
+            }
         }
     }   
-    private function _getTrainData($from , $dest){
+    private function _getTrainData($from , $dest , $order = ''){
         if(empty($from) || empty($dest)){
             return;
         }

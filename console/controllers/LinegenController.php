@@ -35,6 +35,9 @@ class LinegenController extends Controller {
             die();
         }
        foreach($destCities as $destCity){ 
+            if($destCity->id < 10){
+                continue;
+            }
             if($destCity->id === $fromCity->id){
                 continue;
             }

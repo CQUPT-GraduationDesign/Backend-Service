@@ -174,4 +174,24 @@ class DataController extends Controller {
         } 
         return $re;
     }
+    public function actionTemp(){
+        $data = file_get_contents('/root/opt/htdocs/data');
+        $data = explode("\n" , $data);
+        $re = "";
+        $citys = Citys::find()->all();
+        foreach($data as $d){
+            if(empty($d)){
+                continue;
+            }
+            $r = explode(' ' , $d);
+            foreach($citys as $c){
+                if($c->name == $r[0]){
+                    break;
+                }
+            }
+            $r = "'".$r[1]."' => '".$c->id."' , \n";
+            $re.=$r;
+        }
+        echo $re;
+    }
 }
