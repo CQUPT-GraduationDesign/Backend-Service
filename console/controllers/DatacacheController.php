@@ -62,11 +62,23 @@ class DatacacheController extends Controller {
                 }
                 $cachedData = array_slice($filteredData , 0 , 200);
                 $key = $this->_trainCachePre.$fromCity->id.'_'.$destCity->id.'_'.$key; 
-                if($this->_mem->set($key , $cachedData) === true){
-                    echo $fromCity->id.' ------> '.$destCity->id.' mem succeed '."\n"; 
+                if(!$this->_mem->exists($key)){
+                    if($this->_mem->set($key , $cachedData) === true){
+                        echo $fromCity->id.' ------> '.$destCity->id.' mem succeed '.$key."\n"; 
+                    }else{
+                        echo $fromCity->id.' ------> '.$destCity->id.' mem failed'.$key."\n"; 
+                    }
+                }else{
+                    echo $fromCity->id.' ------> '.$destCity->id.' mem existed'.$key."\n"; 
                 }
-                if($this->_redis->set($key , $cachedData) === true){
-                    echo $fromCity->id.' ------> '.$destCity->id.' redis succeed '."\n"; 
+                if(!$this->_redis->exists($key)){
+                    if($this->_redis->set($key , $cachedData) === true){
+                        echo $fromCity->id.' ------> '.$destCity->id.' redis succeed '.$key."\n"; 
+                    }else{
+                        echo $fromCity->id.' ------> '.$destCity->id.' redis failed'.$key."\n"; 
+                    }
+                }else{
+                    echo $fromCity->id.' ------> '.$destCity->id.' redis existed'.$key."\n"; 
                 }
                 unset($allData);
                 unset($cachedData);
@@ -78,7 +90,7 @@ class DatacacheController extends Controller {
             return;
         }
         $query = new Query();
-        $query->select('*')->where('fromcityid = '.$from->id.' and tocityid = '.$dest->id)->orderBy('wholeDuration , onTrainDuration , transferSeconds')->from('transfertrainline');
+        $query->select('*')->where('fromcityid = '.$from->id.' and tocityid = '.$dest->id)->orderBy($order)->from('transfertrainline');
         return $query->all();
     }
     private function _filterTrainData( $allData ){
