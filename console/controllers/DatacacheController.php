@@ -62,24 +62,24 @@ class DatacacheController extends Controller {
                 }
                 $cachedData = array_slice($filteredData , 0 , 200);
                 $key = $this->_trainCachePre.$fromCity->id.'_'.$destCity->id.'_'.$key; 
-                if(!$this->_mem->exists($key)){
+               if(!$this->_mem->exists($key)){
                     if($this->_mem->set($key , $cachedData) === true){
                         echo $fromCity->id.' ------> '.$destCity->id.' mem succeed '.$key."\n"; 
                     }else{
-                        echo $fromCity->id.' ------> '.$destCity->id.' mem failed'.$key."\n"; 
+                        echo $fromCity->id.' ------> '.$destCity->id.' mem failed '.$key."\n"; 
                     }
-                }else{
-                    echo $fromCity->id.' ------> '.$destCity->id.' mem existed'.$key."\n"; 
-                }
-                if(!$this->_redis->exists($key)){
+               }else{
+                   echo $fromCity->id.' ------> '.$destCity->id.' mem existed '.$key."\n"; 
+               }
+               if(!$this->_redis->exists($key)){
                     if($this->_redis->set($key , $cachedData) === true){
                         echo $fromCity->id.' ------> '.$destCity->id.' redis succeed '.$key."\n"; 
                     }else{
-                        echo $fromCity->id.' ------> '.$destCity->id.' redis failed'.$key."\n"; 
+                        echo $fromCity->id.' ------> '.$destCity->id.' redis failed '.$key."\n"; 
                     }
-                }else{
-                    echo $fromCity->id.' ------> '.$destCity->id.' redis existed'.$key."\n"; 
-                }
+             }else{
+                echo $fromCity->id.' ------> '.$destCity->id.' redis existed '.$key."\n"; 
+             }
                 unset($allData);
                 unset($cachedData);
             }
@@ -93,6 +93,12 @@ class DatacacheController extends Controller {
         $query->select('*')->where('fromcityid = '.$from->id.' and tocityid = '.$dest->id)->orderBy($order)->from('transfertrainline');
         return $query->all();
     }
+    /**
+     * 
+     * 1.过滤时间上不合适的数据
+     * 2.给火车类型数据添加区分的字段
+     *
+     * */
     private function _filterTrainData( $allData ){
         if(empty($allData)){
             return;
@@ -102,6 +108,10 @@ class DatacacheController extends Controller {
             if( Yii::$app->params['shortestTransferTime']  < $d['transferSeconds'] &&
                 Yii::$app->params['longestTransferTime']   > $d['transferSeconds'] 
              ){ 
+                 $d['startData'] = json_decode($d['startData'] , true);
+                 $d['middleData'] = json_decode($d['middleData'] , true);
+                 $d['startData']['type'] = 1;
+                 $d['middleData']['type'] = 1;
                  if(!empty($this->_maxDurationBetweenCity) && 
                 Yii::$app->params['maxDurationFactor']*$this->_maxDurationBetweenCity->maxduration > $d['wholeDuration']){
                     $re[] = $d; 

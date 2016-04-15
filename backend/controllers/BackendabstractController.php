@@ -74,7 +74,7 @@ class BackendabstractController extends Controller {
                                                 'icon' => 'fa-tv',
                                                 'isAc' => false,
                                                 'items' => [
-                                                        ['name' => '上线数据','icon'=>'fa-tv' ,'url' => Url::toRoute('result/online') , 'isAc'=>false],
+                                                        ['name' => '上线数据','icon'=>'fa-tv' ,'url' => Url::toRoute('online/citys') , 'isAc'=>false],
                                                     ],
                                             ]    
                                         ],    

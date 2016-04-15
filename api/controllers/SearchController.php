@@ -44,7 +44,7 @@ class SearchController extends Controller {
         '1' => 'default',
         '2' => 'whole',
         '3' => 'onTrain',
-        '4' => 'transferSeconds',
+        '4' => 'transfer',
     ];
     public function actionTrain(){
         $request = Yii::$app->request;
@@ -52,11 +52,11 @@ class SearchController extends Controller {
             $mem = Yii::$app->memcache;
             $redis = Yii::$app->rediscache;
             $post = $request->post();
-            if(empty($post['from']) ||
-               empty($post['to'])   ||
-               empty($post['type']) ||
-               empty($post['page']) ||
-               empty($post['counts'])){
+            if(!isset($post['from']) ||
+               !isset($post['to'])   ||
+               !isset($post['type']) ||
+               !isset($post['page']) ||
+               !isset($post['counts'])){
                     throw new ForbiddenHttpException('POST data error' ,'409'); 
                }else{
                     $clientIds = array_keys($this->clientCityMap);
@@ -75,6 +75,9 @@ class SearchController extends Controller {
                         throw new ForbiddenHttpException('counts or page is wrong' ,'412'); 
                     }
                     $key = $this->_trainCachePre.$post['from'].'_'.$post['to'].'_'.$this->typeMap[$post['type']]; 
+               //         $allData = $this->_getDataFromDb($post['from'] , $post['to'] , $this->typeMap[$post['type']]);
+                 //       return $this->_getPageData($allData , $post['page'] , $post['counts']);
+                   //     die();
                     if($mem->exists($key)){
                         $allData = $mem->get($key);
                         return $this->_getPageData($allData , $post['page'] , $post['counts']);
@@ -93,7 +96,11 @@ class SearchController extends Controller {
     private function _getPageData($data , $page , $count){
         $reData['code'] = 200;
         $reData['message'] = 'OK';
-        $reData['data'] = array_slice($data , $page*$count , $count);
+        if(!empty($data)){
+            $reData['data'] = array_slice($data , $page*$count , $count);
+        }else{
+           throw new  \yii\web\NotFoundHttpException('No data' , '404');
+        }
         return $reData;
     }
     private function _getDataFromDb($from , $to , $type){
@@ -116,6 +123,12 @@ class SearchController extends Controller {
         $query->select('*')->where('fromcityid = '.$from.' and tocityid = '.$dest)->orderBy($order)->from('transfertrainline');
         return $query->all();
     }
+    /**
+     * 
+     * 1.过滤时间上不合适的数据
+     * 2.给火车类型数据添加区分的字段
+     *
+     * */
     private function _filterTrainData( $allData ){
         if(empty($allData)){
             return;
@@ -125,6 +138,10 @@ class SearchController extends Controller {
             if( Yii::$app->params['shortestTransferTime']  < $d['transferSeconds'] &&
                 Yii::$app->params['longestTransferTime']   > $d['transferSeconds'] 
              ){ 
+                 $d['startData'] = json_decode($d['startData'] , true);
+                 $d['middleData'] = json_decode($d['middleData'] , true);
+                 $d['startData']['type'] = 1;
+                 $d['middleData']['type'] = 1;
                  if(!empty($this->_maxDurationBetweenCity) && 
                 Yii::$app->params['maxDurationFactor']*$this->_maxDurationBetweenCity->maxduration > $d['wholeDuration']){
                     $re[] = $d; 

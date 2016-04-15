@@ -10,6 +10,7 @@
                                         </thead>
                                         <tbody>
                                         <?php
+                                        if($this->beginCache('1234')){
                                         foreach($rows as $r){
                                             echo'
                                             <tr class="odd gradeX">
@@ -23,6 +24,8 @@
                                                    '.$r['code'].' 
                                                 </td>
                                                 </tr>';
+                                        }
+                                        $this->endCache();
                                         }
                                         ?>
                                         </tbody>
