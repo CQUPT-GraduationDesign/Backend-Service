@@ -3,7 +3,6 @@
 # redis admin client
 /redisadmin
 /memadmin
-/datatable-js
 /backend/assets
 #sp file
 table-datatables-managed.js
