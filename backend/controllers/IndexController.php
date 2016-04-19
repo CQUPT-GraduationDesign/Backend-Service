@@ -32,7 +32,15 @@ class IndexController extends BackendabstractController {
     }
     
     public function actionIndex(){
-        return $this->render('index');
+        $dataPath = '/opt/data/mon/sys/';
+        $cpu = file_get_contents($dataPath.'cpu.txt');
+        $cpu = explode(' ' , $cpu);
+        $mem = file_get_contents($dataPath.'mem.txt');
+        $mem = explode(' ' , $mem);
+        return $this->render('index' , [
+            'cpu' => $cpu,
+            'mem' => $mem,
+        ]); 
     }
     public function actionError(){
         $exception = Yii::$app->errorHandler->exception;
