@@ -47,8 +47,11 @@ class IndexController extends BackendabstractController {
         $cpu = explode(' ' , $cpu);
         $mem = file_get_contents($dataPath.'mem.txt');
         $mem = explode(' ' , $mem);
+        $net = file_get_contents($dataPath.'net.txt');
+        $net = explode(' ' , $net);
         $re['idle'] = $cpu[0];
         $re['mem'] = $mem[1]; 
+        $re['netin'] =  $net[0];
         return json_encode($re);
     }
     public function actionError(){

@@ -27,7 +27,7 @@ require(
         trigger: 'axis'
     },
     legend: {
-        data:['used memory', 'cpu idle']
+        data:['used memory', 'net in(KB/s)']
     },
     toolbox: {
         show : true,
@@ -76,7 +76,7 @@ require(
     {
         type : 'value',
         scale: true,
-        name : 'cpu',
+        name : 'net',
         boundaryGap: [0.2, 0.2]
     },
     {
@@ -96,30 +96,20 @@ require(
             var res = [];
             var len = 20;
             while (len--) {
-                if(len == 0){
-                    break;
-                }
-                res[len] = 0;
-                //res.push(Math.round(Math.random() * 1000));
+                res.push(Math.round(Math.random() * 550));
             }
-            res[len] = 123;
             return res;
         })()
     },
     {
-        name:'cpu idle',
+        name: 'net in(KB/s)',
         type:'line',
         data:(function (){
             var res = [];
             var len = 20;
             while (len--) {
-                if(len == 0){
-                    break;
-                }
-                res[len] = 0;
-                //res.push(Math.round(Math.random() * 1000));
+                res.push(Math.round(Math.random() * 1.5));
             }
-            res[len] = 123;
             return res;
         })()
     }
@@ -150,7 +140,7 @@ require(
                     ],
                     [
                     1,        // 系列索引
-                    ajData['idle'],
+                    ajData['netin'],
                     true,    // 新增数据是否从队列头部插入
                     false,    // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
                     axisData  // 坐标轴标签
