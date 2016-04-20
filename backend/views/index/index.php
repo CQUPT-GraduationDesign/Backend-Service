@@ -82,12 +82,12 @@ $this->registerJsFile("http://go.king-liu.net/echart-js/echarts.js");
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <i class=" icon-layers font-green"></i>
-                                        <span class="caption-subject font-green bold uppercase">mon chart</span>
+                                        <span class="caption-subject font-green bold uppercase">系统监控</span>
                                     </div>
                                     
                                 </div>
                                 <div class="portlet-body">
-                                <div id="docker-1" style="width: 1600px;height:400px;"></div>                
+                                <div id="sys-mon" style="width: 1600px;height:500px;"></div>                
                                 </div>
                             </div>
                         </div>

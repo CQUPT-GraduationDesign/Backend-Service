@@ -127,30 +127,24 @@ require(
             };
             // 为echarts对象加载数据 
             myChart.setOption(option); 
+            var lastData = 11;
             var axisData;
             //clearInterval(timeTicket);
             timeTicket = setInterval(function (){
+                lastData += Math.random() * ((Math.round(Math.random() * 10) % 2) == 0 ? 1 : -1);
+                lastData = lastData.toFixed(1) - 0;
                 axisData = (new Date()).toLocaleTimeString().replace(/^\D*/,'');
-                ajData = new Object();
-                $.ajax({
-                    async : false ,
-                    url : 'http://go.king-liu.net/backend/index.php/index/monsysapi',
-                    dataType : 'json',
-                    success : function(data){
-                        ajData = data;
-                    }
-                });
                 // 动态数据接口 addData
                 myChart.addData([
                     [
                     0,        // 系列索引
-                    ajData['mem'],
+                    Math.round(Math.random() * 1000), // 新增数据
                     true,     // 新增数据是否从队列头部插入
                     false     // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
                     ],
                     [
                     1,        // 系列索引
-                    ajData['idle'],
+                    lastData, // 新增数据
                     true,    // 新增数据是否从队列头部插入
                     false,    // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
                     axisData  // 坐标轴标签

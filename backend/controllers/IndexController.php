@@ -18,8 +18,7 @@ class IndexController extends BackendabstractController {
                 'rules' =>[   
                     [
                        'allow' => true,
-                       'actions' => ['index'],
-                       'roles' => ['@'],
+                       'actions' => ['index' , 'monsysapi'],
                     ], 
                     [
                        'allow' => true,
@@ -41,6 +40,16 @@ class IndexController extends BackendabstractController {
             'cpu' => $cpu,
             'mem' => $mem,
         ]); 
+    }
+    public function actionMonsysapi(){
+        $dataPath = '/opt/data/mon/sys/';
+        $cpu = file_get_contents($dataPath.'cpu.txt');
+        $cpu = explode(' ' , $cpu);
+        $mem = file_get_contents($dataPath.'mem.txt');
+        $mem = explode(' ' , $mem);
+        $re['idle'] = $cpu[0];
+        $re['mem'] = $mem[1]; 
+        return json_encode($re);
     }
     public function actionError(){
         $exception = Yii::$app->errorHandler->exception;
