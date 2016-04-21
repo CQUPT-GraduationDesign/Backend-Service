@@ -41,9 +41,12 @@ class ResController extends Controller {
             $collects = Usercollect::find(['frontuserid' => $user->uid])->where('isdeleted = 0')->all();
             $trainlinesRe = [];
             foreach($collects as $c){
-                $trainlinesRe[] = $c->transferline;
+                $d = $c->transferline;
+                $d->startData = json_decode($d->startData , true);
+                $d->middleData = json_decode($d->middleData , true);
+                $trainlinesRe[] = $d;
             }
-            return $trainlinesRe;
+            return ['data'=>$trainlinesRe , 'code'=>200 , 'message'=>'OK'];
         }else{
             throw new ForbiddenHttpException('you are not allowed' ,'407'); 
         }

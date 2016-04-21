@@ -34,8 +34,8 @@ return [
         'setWritable' => [
             'backend/runtime',
             'backend/web/assets',
-            'web/runtime',
-            'web/web/assets',
+            'touch/runtime',
+            'touch/web/assets',
             'api/runtime',
             'api/web/assets',
         ],
@@ -45,7 +45,7 @@ return [
         ],
         'setCookieValidationKey' => [
             'backend/config/main-local.php',
-            'web/config/main-local.php',
+            'touch/config/main-local.php',
             'api/config/main-local.php',
         ],
     ],
@@ -54,8 +54,8 @@ return [
         'setWritable' => [
             'backend/runtime',
             'backend/web/assets',
-            'web/runtime',
-            'web/web/assets',
+            'touch/runtime',
+            'touch/web/assets',
             'api/runtime',
             'api/web/assets',
         ],
@@ -64,7 +64,7 @@ return [
         ],
         'setCookieValidationKey' => [
             'backend/config/main-local.php',
-            'web/config/main-local.php',
+            'touch/config/main-local.php',
             'api/config/main-local.php',
         ],
     ],
