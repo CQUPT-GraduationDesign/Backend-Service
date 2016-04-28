@@ -1,3 +1,5 @@
+<?php
+?>
   <div class="page-group">
       <!-- 你的html代码 -->
       <div class="page">

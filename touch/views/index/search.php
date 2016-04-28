@@ -1,4 +1,6 @@
-<div class="page-group">
+<?php
+?>
+  <div class="page-group">
       <!-- 你的html代码 -->
       <div class="page">
           <header class="bar bar-nav">
@@ -33,115 +35,60 @@
                   </div>
                  
                     <div class="tabs">
-                      <div id="tab1" class="tab active">
-                        <div class="list-block cards-list" style="margin:0">
-                            <ul>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
+                    <?php
+                    foreach($pageContent as $num=>$con){
+                        if($num == 1){
+                            echo '
+                                <div id="tab'.$num.'" class="tab active">
+                                <div class="list-block media-list" style="margin: 0.5rem 0;">
+                                <ul>
+                                ';
+                        }else{
+                            echo '
+                                <div id="tab'.$num.'" class="tab">
+                                <div class="list-block media-list" style="margin: 0.5rem 0;">
+                                <ul>
+                                ';
+                        }
+                        foreach($con as $c){
+                        $startRange = strpos($c['startData']['duration'] , '小时') ? substr($c['startData']['duration'] , 0 , strpos($c['startData']['duration'] , '小时')).'小时':$c['startData']['duration'];
+                        $middleRange = strpos($c['middleData']['duration'] , '小时') ? substr($c['middleData']['duration'] , 0 , strpos($c['middleData']['duration'] , '小时')).'小时':$c['middleData']['duration'];
+
+                        echo '
+                               <li class="list-li">
+                                  <div class="train-container"> 
+                                    <div class="train-station">
+                                     <span class="train-station-name">'.$c['startData']['from'].'</span>
+                                     <span class="train-time">'.$c['startData']['startTime'].'</span>
+                                    </div>
+                                    <div class="train-line">
+                                    <span class="train-range">'.$startRange.'</span>
+                                      <i class="icon-train"> &#xe601; </i>
+                                      <span class="train-no">'.$c['startData']['trainno'].'</span>
+                                    </div>                                    
+                                    <div class="train-middle">
+                                      <span class="train-station-name">'.$c['startData']['to'].'</span>
+                                      <span class="train-time">'.$c['startData']['endTime'].' | '.$c['middleData']['startTime'].'</span>
+                                    </div>
+                                    <div class="train-line">
+                                      <span class="train-range">'.$middleRange.'</span>
+                                      <i class="icon-train"> &#xe601; </i>
+                                      <span class="train-no">'.$c['middleData']['trainno'].'</span>
+                                    </div> 
+                                      <div class="train-station">
+                                      <span class="train-station-name">'.$c['middleData']['to'].'</span>
+                                     <span class="train-time">'.$c['middleData']['endTime'].'</span>
+                                    </div>  
+                                  </div>
+                              </li>';
+                        }
+                        echo '
                             </ul>
                           </div>
-                        
-                      </div>
-                      <div id="tab2" class="tab">
-                       <div class="list-block cards-list" style="margin:0">
-                            <ul>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                            </ul>
-                          </div>
-                      </div>
-                      <div id="tab3" class="tab">
-                       <div class="list-block cards-list" style="margin:0">
-                            <ul>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                            </ul>
-                          </div>
-                      </div>
-                      <div id="tab4" class="tab">
-                        <div class="list-block cards-list" style="margin:0">
-                            <ul>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                              <li class="card">
-                                <div class="card-header">卡头</div>
-                                <div class="card-content">
-                                  <div class="card-content-inner">卡内容</div>
-                                </div>
-                                <div class="card-footer">卡脚</div>
-                              </li>
-                            </ul>
-                          </div>
-                      </div>
+                      </div>';
+                    }
+                    ?>
+                      
                     </div>
                  
                 </div>
@@ -149,9 +96,12 @@
       </div>
   </div>
 
-    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
-    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
-    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'>
+</script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'>
+</script>
+    <script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'>
+</script>
     <script>
-        $.init();
-    </script>
+    $.init();
+   </script>
