@@ -56,6 +56,19 @@ class IndexController extends Controller{
         $get = $request->get();
         $ids = [];
         $pageContent = '';
+        $pageContent = $this->_computeDataFromGet($get);
+        return $this->render('search' ,['pageContent' => $pageContent]);
+    }
+    public function actionSearchapi(){
+        $request = Yii::$app->request;
+        $get = $request->get();
+        $data = $this->_computeDataFromGet($get);
+        echo json_encode($data);
+    }
+    private function _computeDataFromGet($get){
+        $page = 0;
+        $counts = 20;
+        $pageContent = [];
         if(!empty($get['s']) && !empty($get['d'])){
             $ids = $this->_nameToId($get['s'] , $get['d']);
         }else{
@@ -64,22 +77,41 @@ class IndexController extends Controller{
         if(empty($ids)){
             throw new BadRequestHttpException();          
         }
+        if(isset($get['page']) && is_int((int)$get['page']) && isset($get['counts']) && is_int((int)$get['counts'])){
+            $page = (int)$get['page'];
+            $counts = (int)$get['counts'];
+        }
         $mem = Yii::$app->memcache;
         $redis = Yii::$app->rediscache;
-        foreach($this->typeMap as $typeNum => $type){
-            $key = $this->_trainCachePre.$ids['s'].'_'.$ids['d'].'_'.$type; 
+        if(isset($get['type']) && is_int((int)$get['type'])){
+            $key = $this->_trainCachePre.$ids['s'].'_'.$ids['d'].'_'.$this->typeMap[$get['type']]; 
+            $typeNum = (int)$get['type'];
             if($mem->exists($key)){
                 $allData = $mem->get($key);
-                $pageContent[$typeNum] = $this->_getPageData($allData , 0 , 20);
+                $pageContent[$typeNum] = $this->_getPageData($allData , $page , $counts);
             }else if($redis->exists($key)){
                 $allData = $redis->get($key);
-                $pageContent[$typeNum] = $this->_getPageData($allData , 0 , 20);
+                $pageContent[$typeNum] = $this->_getPageData($allData , $page , $counts);
             }else{
                 $allData = $this->_getDataFromDb($ids['s'] , $ids['d'] , $type);
-                $pageContent[$typeNum] = $this->_getPageData($allData , 0 , 20);
+                $pageContent[$typeNum] = $this->_getPageData($allData , $page , $counts);
+            }
+        }else{
+            foreach($this->typeMap as $typeNum => $type){
+                $key = $this->_trainCachePre.$ids['s'].'_'.$ids['d'].'_'.$type; 
+                if($mem->exists($key)){
+                    $allData = $mem->get($key);
+                    $pageContent[$typeNum] = $this->_getPageData($allData , $page , $counts);
+                }else if($redis->exists($key)){
+                    $allData = $redis->get($key);
+                    $pageContent[$typeNum] = $this->_getPageData($allData , $page , $counts);
+                }else{
+                    $allData = $this->_getDataFromDb($ids['s'] , $ids['d'] , $type);
+                    $pageContent[$typeNum] = $this->_getPageData($allData , $page , $counts);
+                }
             }
         }
-        return $this->render('search' ,['pageContent' => $pageContent]);
+        return $pageContent;
     }
     private function _getPageData($data , $page , $count){
         $reData = [];

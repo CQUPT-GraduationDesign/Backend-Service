@@ -71,7 +71,7 @@ class SearchController extends Controller {
                     }
                     $post['page'] = (int)$post['page'];
                     $post['counts'] = (int)$post['counts'];
-                    if($post['page'] > 9 || $post['page'] < 0 || $post['counts'] != 20){
+                    if($post['page'] < 0 || $post['counts'] > 200){
                         throw new ForbiddenHttpException('counts or page is wrong' ,'412'); 
                     }
                     $key = $this->_trainCachePre.$post['from'].'_'.$post['to'].'_'.$this->typeMap[$post['type']]; 
