@@ -13,9 +13,9 @@ return [
     'bootstrap' => ['log'],
     'modules' => [],
     'components' => [
-        'cache'         => [
-                        'class' => 'yii\caching\FileCache',
-                                ],
+        'cache'  => [
+            'class' => 'yii\caching\FileCache',
+        ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
