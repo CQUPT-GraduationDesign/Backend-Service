@@ -36,24 +36,6 @@ return [
             //'enableStrictParsing' => true,
             'rules' => ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
         ],
-        'rediscache' => [
-               'class' => 'yii\redis\Cache',
-               'redis' => [
-                    'hostname' => 'redis',
-                    'port' => 6379,
-                    'database' => 0,
-               ],
-        ],
-        'memcache' => [
-            'class' => 'yii\caching\MemCache',
-            'servers' => [
-                [
-                    'host' => 'memcached',
-                    'port' => 11211,
-                    'weight' => 100,
-                ],
-            ],
-        ],
     ],
     'params' => $params,
 ];
